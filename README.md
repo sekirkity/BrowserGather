@@ -30,4 +30,4 @@ Chrome browser history and cookie/session data are up next. Afterwards I will lo
 * [wald0](https://wald0.com/), [tifkin_](https://twitter.com/tifkin_), and [harmj0y](https://twitter.com/harmj0y) for requesting this project.
 * [mattifestation](https://twitter.com/mattifestation) for his work on PowerShell, specifically the article on how to Regex a byte stream located [here](https://blogs.technet.microsoft.com/heyscriptingguy/2013/06/24/use-powershell-and-regular-expressions-to-search-binary-data/).
 * et0x for his existing work on PowerShell-based Chrome credential extraction, located [here](https://github.com/et0x/Get-ChromePasswords).
-* [xorrior](https://twitter.com/xorrior) for his previous work in Empire and providing guidance
+* [xorrior](https://twitter.com/xorrior) for his previous work in Empire and providing guidance.
