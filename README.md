@@ -13,7 +13,7 @@ Next, use the cmdlet for the extraction you wish to perform. For example:
 
 `Get-ChromeCreds`
 
-You can also include an optional path. Sometimes the SQLite database is stored in a profile folder like "Profile 1" rathen than "Default".
+You can also include an optional path. For example, the SQLite database may be stored in a profile folder like "Profile 1" rather than "Default".
 
 `Get-ChromeCreds "C:\Users\sekirkity\AppData\Local\Google\Chrome\User Data\Profile 1\Login Data"`
 
