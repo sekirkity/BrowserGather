@@ -1,7 +1,7 @@
 # BrowserGather
 Fileless Extraction of Sensitive Browser Information with PowerShell
 
-This project will include various cmdlets for extracting credential, history, and cookie/session data from the top 3 most popular web browsers (Chrome, Firefox, and IE). The goal is to perform this extraction entirely in-memory, without touching the disk of the victim. Currently only Chrome credential extraction is supported, but more to come!
+This project will include various cmdlets for extracting credential, history, and cookie/session data from the top 3 most popular web browsers (Chrome, Firefox, and IE). The goal is to perform this extraction entirely in-memory, without touching the disk of the victim. Currently only Chrome credential extraction is supported, but more to come! For more information, visit my blog at [sekirkity.com](http://sekirkity.com/).
 
 ## Instructions
 
