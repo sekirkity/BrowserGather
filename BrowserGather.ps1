@@ -130,7 +130,6 @@
 	        Write-Warning -Message 'Found a different number of usernames and passwords! This is likely due to a regex mismatch.  You may find that your usernames/passwords do not fit together perfectly.'
         }
         
-
         # ******************************
         #
         #  Format and output everything
@@ -157,10 +156,9 @@
             $OutputArray += $object
         }
         
-        ## Append array to object
-        $OutputObject | Add-Member -MemberType NoteProperty -Name "$ProfileNameFlattened" -Value $OutputArray
-        
-        If (!($OutputAsObject)) {
+        If ($OutputAsObject) {
+            $OutputObject | Add-Member -MemberType NoteProperty -Name "$ProfileNameFlattened" -Value $OutputArray
+        } else {
             Write-Output -InputObject "`n`nProfile found: $ProfileNameFlattened`n"
             Write-output -InputObject $OutputArray | Format-List
         }
@@ -177,19 +175,17 @@
 
 function Get-ChromeCookies() {
 	Param(
-		[String]$Path
+        [ValidateNotNullOrEmpty()]
+		[String]$Path = "$env:localappdata\Google\Chrome\User Data\Default\Cookies"
 	)
+    
+    Add-Type -AssemblyName System.Security
 
-	if ([String]::IsNullOrEmpty($Path)) {
-		$Path = "$env:USERPROFILE\AppData\Local\Google\Chrome\User Data\Default\Cookies"
-	}
-
-	if (![system.io.file]::Exists($Path))
+	If (!(Test-Path -Path $Path))
 	{
-		Write-Error 'Chrome db file doesnt exist, or invalid file path specified.'
-		Break
+		Throw 'Chrome db file doesnt exist, or invalid file path specified.'
 	}
-	Add-Type -AssemblyName System.Security
+    
 	# Credit to Matt Graber for his technique on using regular expressions to search for binary data
 	$Stream = New-Object IO.FileStream -ArgumentList $Path, 'Open', 'Read', 'ReadWrite'
 	$Encoding = [system.Text.Encoding]::GetEncoding(28591)
@@ -197,14 +193,14 @@ function Get-ChromeCookies() {
 	$BinaryText = $StreamReader.ReadToEnd()
 	$StreamReader.Close()
 	$Stream.Close()
-
+    
 	# Regex for the encrypted blob. Starting bytes were easy, but the terminating bytes were tricky. Four different scenarios are covered.
 	$BlobRegex = [Regex] '(\x01\x00\x00\x00\xD0\x8C\x9D\xDF\x01\x15\xD1\x11\x8C\x7A\x00\xC0\x4F\xC2\x97\xEB\x01\x00\x00\x00)[\s\S]*?(?=[\s\S]{2}\x97[\s\S]{8}\x00[\s\S]{2}\x0D|\x0D[\s\S]{2}\x00[\s\S]{3}\x00\x02|\x00{20}|\Z)'
 	$BlobMatches = $BlobRegex.Matches($BinaryText)
 	$BlobNum = 0
 	$DecBlobArray = @()
 	$BlobMatchCount = $BlobMatches.Count
-
+    
 	# Attempt to decrypt the blob. If it fails, a null byte is added to the end.
 	# If it fails again, most likely due to non-contiguous storage. The blob value will be changed.
 	# Then puts results into an array.
@@ -241,8 +237,7 @@ function Get-ChromeCookies() {
 	# All returned values should be treated with caution if this error is presented. May be out of order.
 	
 	if (-NOT ($CookieMatchCount -eq $BlobMatchCount)) { 
-		$Mismatch = [string]"The number of cookies is different than the number of encrypted blobs! This is most likely due to a regex mismatch."
-		Write-Error $Mismatch
+		Write-Warning -Message "The number of cookies is different than the number of encrypted blobs! This is most likely due to a regex mismatch."
 	}
 
 	# Put cookies into an array.
@@ -268,5 +263,6 @@ function Get-ChromeCookies() {
 		$obj = New-Object PSObject -Property $ObjectProp
 		$ArrayFinal.Add($obj) | Out-Null
 	}
-	$ArrayFinal
+    
+	Write-Output $ArrayFinal
 }
